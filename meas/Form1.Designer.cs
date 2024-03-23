@@ -37,16 +37,19 @@
             separaToolStripMenuItem = new ToolStripSeparator();
             ecitToolStripMenuItem = new ToolStripMenuItem();
             deviceToolStripMenuItem = new ToolStripMenuItem();
+            connectToolStripMenuItem = new ToolStripMenuItem();
             getStatusToolStripMenuItem = new ToolStripMenuItem();
             measureToolStripMenuItem = new ToolStripMenuItem();
+            getDataToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
             toolStripStatusLabel3 = new ToolStripStatusLabel();
+            toolStripStatusLabel4 = new ToolStripStatusLabel();
+            toolStripStatusLabel5 = new ToolStripStatusLabel();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             timeoutBox = new NumericUpDown();
-            packetBox = new TextBox();
             label9 = new Label();
             dConnect = new Button();
             button2 = new Button();
@@ -77,6 +80,8 @@
             tabPage3 = new TabPage();
             label10 = new Label();
             comTimer = new System.Windows.Forms.Timer(components);
+            saveFileDialog1 = new SaveFileDialog();
+            openFileDialog1 = new OpenFileDialog();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -106,52 +111,67 @@
             // saveXmlToolStripMenuItem
             // 
             saveXmlToolStripMenuItem.Name = "saveXmlToolStripMenuItem";
-            saveXmlToolStripMenuItem.Size = new Size(180, 22);
-            saveXmlToolStripMenuItem.Text = "Save xml";
+            saveXmlToolStripMenuItem.Size = new Size(103, 22);
+            saveXmlToolStripMenuItem.Text = "Save";
+            saveXmlToolStripMenuItem.Click += saveXmlToolStripMenuItem_Click;
             // 
             // openXmlToolStripMenuItem
             // 
             openXmlToolStripMenuItem.Name = "openXmlToolStripMenuItem";
-            openXmlToolStripMenuItem.Size = new Size(180, 22);
-            openXmlToolStripMenuItem.Text = "Open xml";
+            openXmlToolStripMenuItem.Size = new Size(103, 22);
+            openXmlToolStripMenuItem.Text = "Open";
+            openXmlToolStripMenuItem.Click += openXmlToolStripMenuItem_Click;
             // 
             // separaToolStripMenuItem
             // 
             separaToolStripMenuItem.Name = "separaToolStripMenuItem";
-            separaToolStripMenuItem.Size = new Size(177, 6);
+            separaToolStripMenuItem.Size = new Size(100, 6);
             // 
             // ecitToolStripMenuItem
             // 
             ecitToolStripMenuItem.Name = "ecitToolStripMenuItem";
-            ecitToolStripMenuItem.Size = new Size(180, 22);
+            ecitToolStripMenuItem.Size = new Size(103, 22);
             ecitToolStripMenuItem.Text = "Exit";
             ecitToolStripMenuItem.Click += ecitToolStripMenuItem_Click;
             // 
             // deviceToolStripMenuItem
             // 
-            deviceToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { getStatusToolStripMenuItem, measureToolStripMenuItem });
+            deviceToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { connectToolStripMenuItem, getStatusToolStripMenuItem, measureToolStripMenuItem, getDataToolStripMenuItem });
             deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
             deviceToolStripMenuItem.Size = new Size(54, 20);
             deviceToolStripMenuItem.Text = "Device";
             // 
+            // connectToolStripMenuItem
+            // 
+            connectToolStripMenuItem.Name = "connectToolStripMenuItem";
+            connectToolStripMenuItem.Size = new Size(126, 22);
+            connectToolStripMenuItem.Text = "Connect";
+            connectToolStripMenuItem.Click += connectToolStripMenuItem_Click;
+            // 
             // getStatusToolStripMenuItem
             // 
             getStatusToolStripMenuItem.Name = "getStatusToolStripMenuItem";
-            getStatusToolStripMenuItem.Size = new Size(180, 22);
+            getStatusToolStripMenuItem.Size = new Size(126, 22);
             getStatusToolStripMenuItem.Text = "Get status";
             getStatusToolStripMenuItem.Click += getStatusToolStripMenuItem_Click;
             // 
             // measureToolStripMenuItem
             // 
-            measureToolStripMenuItem.Enabled = false;
             measureToolStripMenuItem.Name = "measureToolStripMenuItem";
-            measureToolStripMenuItem.Size = new Size(180, 22);
+            measureToolStripMenuItem.Size = new Size(126, 22);
             measureToolStripMenuItem.Text = "Measure";
             measureToolStripMenuItem.Click += measureToolStripMenuItem_Click;
             // 
+            // getDataToolStripMenuItem
+            // 
+            getDataToolStripMenuItem.Name = "getDataToolStripMenuItem";
+            getDataToolStripMenuItem.Size = new Size(126, 22);
+            getDataToolStripMenuItem.Text = "Get data";
+            getDataToolStripMenuItem.Click += getDataToolStripMenuItem_Click;
+            // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, toolStripStatusLabel2, toolStripStatusLabel3 });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, toolStripStatusLabel2, toolStripStatusLabel3, toolStripStatusLabel4, toolStripStatusLabel5 });
             statusStrip1.Location = new Point(0, 428);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(800, 22);
@@ -174,6 +194,17 @@
             toolStripStatusLabel3.Name = "toolStripStatusLabel3";
             toolStripStatusLabel3.Size = new Size(0, 17);
             // 
+            // toolStripStatusLabel4
+            // 
+            toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            toolStripStatusLabel4.Size = new Size(78, 17);
+            toolStripStatusLabel4.Text = "| Last packet: ";
+            // 
+            // toolStripStatusLabel5
+            // 
+            toolStripStatusLabel5.Name = "toolStripStatusLabel5";
+            toolStripStatusLabel5.Size = new Size(0, 17);
+            // 
             // tabControl1
             // 
             tabControl1.Controls.Add(tabPage1);
@@ -190,7 +221,6 @@
             // tabPage1
             // 
             tabPage1.Controls.Add(timeoutBox);
-            tabPage1.Controls.Add(packetBox);
             tabPage1.Controls.Add(label9);
             tabPage1.Controls.Add(dConnect);
             tabPage1.Controls.Add(button2);
@@ -230,21 +260,14 @@
             timeoutBox.Value = new decimal(new int[] { 100, 0, 0, 0 });
             timeoutBox.ValueChanged += timeoutBox_ValueChanged;
             // 
-            // packetBox
-            // 
-            packetBox.Location = new Point(8, 347);
-            packetBox.Name = "packetBox";
-            packetBox.Size = new Size(776, 23);
-            packetBox.TabIndex = 20;
-            // 
             // label9
             // 
             label9.AutoSize = true;
             label9.Location = new Point(8, 154);
             label9.Name = "label9";
-            label9.Size = new Size(75, 15);
+            label9.Size = new Size(81, 15);
             label9.TabIndex = 19;
-            label9.Text = "Timout (ms):";
+            label9.Text = "Timeout (ms):";
             // 
             // dConnect
             // 
@@ -493,6 +516,17 @@
             // 
             comTimer.Tick += comTimer_Tick;
             // 
+            // saveFileDialog1
+            // 
+            saveFileDialog1.Filter = "CSV - файлы (*.csv)|*.csv|TXT - файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+            saveFileDialog1.FileOk += saveFileDialog1_FileOk;
+            // 
+            // openFileDialog1
+            // 
+            openFileDialog1.FileName = "openFileDialog1";
+            openFileDialog1.Filter = "CSV - файлы (*.csv)|*.csv|TXT - файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+            openFileDialog1.FileOk += openFileDialog1_FileOk;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -504,6 +538,7 @@
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "Form1";
+            FormClosing += Form1_FormClosing;
             Load += Form1_Load;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
@@ -558,7 +593,6 @@
         private Label label10;
         private System.Windows.Forms.Timer comTimer;
         private ToolStripStatusLabel toolStripStatusLabel1;
-        private TextBox packetBox;
         private ToolStripStatusLabel toolStripStatusLabel2;
         private ToolStripMenuItem measureToolStripMenuItem;
         private ToolStripStatusLabel toolStripStatusLabel3;
@@ -570,5 +604,11 @@
         private DataGridViewTextBoxColumn res;
         private DataGridViewTextBoxColumn k;
         private DataGridViewTextBoxColumn val;
+        private ToolStripMenuItem getDataToolStripMenuItem;
+        private ToolStripMenuItem connectToolStripMenuItem;
+        private SaveFileDialog saveFileDialog1;
+        private OpenFileDialog openFileDialog1;
+        private ToolStripStatusLabel toolStripStatusLabel4;
+        private ToolStripStatusLabel toolStripStatusLabel5;
     }
 }

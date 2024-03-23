@@ -2,8 +2,11 @@
 
 
 using System.CodeDom.Compiler;
+using System.IO;
 using System.IO.Ports;
 using System.Security.Policy;
+using System.Text.Json.Nodes;
+using System.Windows.Forms;
 
 namespace meas
 {
@@ -333,7 +336,7 @@ namespace meas
         private void comTimer_Tick(object sender, EventArgs e)
         {
             comTimer.Stop();
-            packetBox.Text = com_read();
+            toolStripStatusLabel5.Text = com_read();
             comPacketHandler();
         }
 
@@ -350,7 +353,95 @@ namespace meas
 
         private void measureToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            cmdSend(TComCmd.cmd_measure);
+        }
+
+        private void getDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             cmdSend(TComCmd.cmd_get_last_data);
         }
+
+        private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectTab(0);
+        }
+
+        private void saveXmlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.ShowDialog(this);
+        }
+
+        private void saveFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            string Path = saveFileDialog1.FileName;
+            FileStream f = new FileStream(Path, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+            if (f != null)
+            {
+                for (int i = 0; i < dataGridView1.Rows.Count - 1; i++)
+                {
+                    string s = "";
+                    for (int j = 0; j < dataGridView1.Rows[i].Cells.Count; j++)
+                    {
+                        s += dataGridView1.Rows[i].Cells[j].Value;
+                        s += ';';
+                    }
+                    if (i < dataGridView1.Rows.Count - 2)
+                        s += "\n";
+                    f.Write(System.Text.Encoding.UTF8.GetBytes(s), 0, s.Length);
+                }
+                f.Close();
+            }
+        }
+
+        private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            string Path = openFileDialog1.FileName;
+            FileStream f = new FileStream(Path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            if (f != null)
+            {
+                dataGridView1.Rows.Clear();
+                int c;
+                string s = "";
+                int i = dataGridView1.Rows.Add();
+                int j = 0;
+                while ((c = f.ReadByte()) > 0)
+                {
+                    if (c == ';')
+                    {
+                        dataGridView1.Rows[i].Cells[j++].Value = s;
+                        s = "";
+                    }
+                    else
+                    {
+                        s += (char)c;
+                    }
+                    if (c == '\n')
+                    {
+                        i = dataGridView1.Rows.Add();
+                        s = "";
+                        j = 0;
+                    }
+                    if (c == '\r')
+                    {
+                        s = "";
+                    }
+                }
+                f.Close();
+            }
+        }
+
+        private void openXmlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.ShowDialog(this);
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_serialPort.IsOpen)
+            {
+                _serialPort.Close();
+            }
+        }
+
     }
 }
