@@ -45,6 +45,7 @@
             toolStripStatusLabel3 = new ToolStripStatusLabel();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            timeoutBox = new NumericUpDown();
             packetBox = new TextBox();
             label9 = new Label();
             dConnect = new Button();
@@ -67,16 +68,23 @@
             label1 = new Label();
             comPorts = new ComboBox();
             tabPage2 = new TabPage();
+            dataGridView1 = new DataGridView();
+            id = new DataGridViewTextBoxColumn();
+            time = new DataGridViewTextBoxColumn();
+            res = new DataGridViewTextBoxColumn();
+            k = new DataGridViewTextBoxColumn();
+            val = new DataGridViewTextBoxColumn();
             tabPage3 = new TabPage();
             label10 = new Label();
             comTimer = new System.Windows.Forms.Timer(components);
-            timeoutBox = new NumericUpDown();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
-            tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)timeoutBox).BeginInit();
+            tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            tabPage3.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -98,24 +106,24 @@
             // saveXmlToolStripMenuItem
             // 
             saveXmlToolStripMenuItem.Name = "saveXmlToolStripMenuItem";
-            saveXmlToolStripMenuItem.Size = new Size(126, 22);
+            saveXmlToolStripMenuItem.Size = new Size(180, 22);
             saveXmlToolStripMenuItem.Text = "Save xml";
             // 
             // openXmlToolStripMenuItem
             // 
             openXmlToolStripMenuItem.Name = "openXmlToolStripMenuItem";
-            openXmlToolStripMenuItem.Size = new Size(126, 22);
+            openXmlToolStripMenuItem.Size = new Size(180, 22);
             openXmlToolStripMenuItem.Text = "Open xml";
             // 
             // separaToolStripMenuItem
             // 
             separaToolStripMenuItem.Name = "separaToolStripMenuItem";
-            separaToolStripMenuItem.Size = new Size(123, 6);
+            separaToolStripMenuItem.Size = new Size(177, 6);
             // 
             // ecitToolStripMenuItem
             // 
             ecitToolStripMenuItem.Name = "ecitToolStripMenuItem";
-            ecitToolStripMenuItem.Size = new Size(126, 22);
+            ecitToolStripMenuItem.Size = new Size(180, 22);
             ecitToolStripMenuItem.Text = "Exit";
             ecitToolStripMenuItem.Click += ecitToolStripMenuItem_Click;
             // 
@@ -129,7 +137,7 @@
             // getStatusToolStripMenuItem
             // 
             getStatusToolStripMenuItem.Name = "getStatusToolStripMenuItem";
-            getStatusToolStripMenuItem.Size = new Size(126, 22);
+            getStatusToolStripMenuItem.Size = new Size(180, 22);
             getStatusToolStripMenuItem.Text = "Get status";
             getStatusToolStripMenuItem.Click += getStatusToolStripMenuItem_Click;
             // 
@@ -137,8 +145,9 @@
             // 
             measureToolStripMenuItem.Enabled = false;
             measureToolStripMenuItem.Name = "measureToolStripMenuItem";
-            measureToolStripMenuItem.Size = new Size(126, 22);
+            measureToolStripMenuItem.Size = new Size(180, 22);
             measureToolStripMenuItem.Text = "Measure";
+            measureToolStripMenuItem.Click += measureToolStripMenuItem_Click;
             // 
             // statusStrip1
             // 
@@ -209,6 +218,17 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Device";
             tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // timeoutBox
+            // 
+            timeoutBox.Location = new Point(85, 151);
+            timeoutBox.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            timeoutBox.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
+            timeoutBox.Name = "timeoutBox";
+            timeoutBox.Size = new Size(56, 23);
+            timeoutBox.TabIndex = 6;
+            timeoutBox.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            timeoutBox.ValueChanged += timeoutBox_ValueChanged;
             // 
             // packetBox
             // 
@@ -401,6 +421,7 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(dataGridView1);
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
@@ -408,6 +429,45 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Measure";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView1
+            // 
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { id, time, res, k, val });
+            dataGridView1.Dock = DockStyle.Fill;
+            dataGridView1.Location = new Point(3, 3);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.Size = new Size(786, 370);
+            dataGridView1.TabIndex = 0;
+            // 
+            // id
+            // 
+            id.HeaderText = "id";
+            id.Name = "id";
+            id.ReadOnly = true;
+            // 
+            // time
+            // 
+            time.HeaderText = "time";
+            time.Name = "time";
+            time.ReadOnly = true;
+            // 
+            // res
+            // 
+            res.HeaderText = "res";
+            res.Name = "res";
+            res.ReadOnly = true;
+            // 
+            // k
+            // 
+            k.HeaderText = "k";
+            k.Name = "k";
+            // 
+            // val
+            // 
+            val.HeaderText = "val";
+            val.Name = "val";
+            val.ReadOnly = true;
             // 
             // tabPage3
             // 
@@ -433,17 +493,6 @@
             // 
             comTimer.Tick += comTimer_Tick;
             // 
-            // timeoutBox
-            // 
-            timeoutBox.Location = new Point(85, 151);
-            timeoutBox.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
-            timeoutBox.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
-            timeoutBox.Name = "timeoutBox";
-            timeoutBox.Size = new Size(56, 23);
-            timeoutBox.TabIndex = 6;
-            timeoutBox.Value = new decimal(new int[] { 100, 0, 0, 0 });
-            timeoutBox.ValueChanged += timeoutBox_ValueChanged;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -463,9 +512,11 @@
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)timeoutBox).EndInit();
+            tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             tabPage3.ResumeLayout(false);
             tabPage3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)timeoutBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -513,5 +564,11 @@
         private ToolStripStatusLabel toolStripStatusLabel3;
         private ToolStripMenuItem getStatusToolStripMenuItem;
         private NumericUpDown timeoutBox;
+        private DataGridView dataGridView1;
+        private DataGridViewTextBoxColumn id;
+        private DataGridViewTextBoxColumn time;
+        private DataGridViewTextBoxColumn res;
+        private DataGridViewTextBoxColumn k;
+        private DataGridViewTextBoxColumn val;
     }
 }

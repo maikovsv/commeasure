@@ -10,6 +10,8 @@ namespace meas
     public partial class Form1 : Form
     {
         private const int MAXDATA = 0xF;
+        private const int LEN_ASCII_NUMBER = 0x3;
+        private const int LEN_ASCII_FRACTIONAL = 0x4;
         /**
         * @brief command codes
         */
@@ -171,6 +173,25 @@ namespace meas
                     }
                     break;
                 case TComCmd.cmd_get_last_data:
+                    int s = dataGridView1.Rows.Add();
+                    if (s > 0)
+                        dataGridView1.Rows[s].Cells[0].Value = (int)(dataGridView1.Rows[s - 1].Cells[0].Value) + 1;
+                    else
+                        dataGridView1.Rows[s].Cells[0].Value = 0;
+                    dataGridView1.Rows[s].Cells[1].Value = DateTime.Now;
+                    int num = 0;
+                    for (int j = 0; j < LEN_ASCII_NUMBER; j++)
+                    {
+                        num *= 10;
+                        num += inPacket[(int)TComPkt.data + j] - 0x30;
+                    }
+                    float fraq = 0;
+                    for (int j = LEN_ASCII_FRACTIONAL; j > 0; j--)
+                    {
+                        fraq /= 10;
+                        fraq += ((float)inPacket[(int)TComPkt.data + j + LEN_ASCII_NUMBER] - 0x30) / 10;
+                    }
+                    dataGridView1.Rows[s].Cells[2].Value = (num + fraq);
                     break;
                 case TComCmd.cmd_measure:
                     break;
@@ -325,6 +346,11 @@ namespace meas
         {
             comTimer.Interval = (int)timeoutBox.Value;
 
+        }
+
+        private void measureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            cmdSend(TComCmd.cmd_get_last_data);
         }
     }
 }
