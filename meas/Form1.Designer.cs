@@ -523,7 +523,6 @@
             // 
             // openFileDialog1
             // 
-            openFileDialog1.FileName = "openFileDialog1";
             openFileDialog1.Filter = "CSV - файлы (*.csv)|*.csv|TXT - файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
             openFileDialog1.FileOk += openFileDialog1_FileOk;
             // 
@@ -535,9 +534,10 @@
             Controls.Add(tabControl1);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Name = "Form1";
-            Text = "Form1";
+            Text = "Magnetic measure device";
             FormClosing += Form1_FormClosing;
             Load += Form1_Load;
             menuStrip1.ResumeLayout(false);
