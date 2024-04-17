@@ -203,7 +203,8 @@
             // toolStripStatusLabel5
             // 
             toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            toolStripStatusLabel5.Size = new Size(0, 17);
+            toolStripStatusLabel5.Size = new Size(17, 17);
+            toolStripStatusLabel5.Text = "__";
             // 
             // tabControl1
             // 
@@ -257,7 +258,7 @@
             timeoutBox.Name = "timeoutBox";
             timeoutBox.Size = new Size(56, 23);
             timeoutBox.TabIndex = 6;
-            timeoutBox.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            timeoutBox.Value = new decimal(new int[] { 200, 0, 0, 0 });
             timeoutBox.ValueChanged += timeoutBox_ValueChanged;
             // 
             // label9
@@ -423,7 +424,7 @@
             baudRateBox.Name = "baudRateBox";
             baudRateBox.Size = new Size(56, 23);
             baudRateBox.TabIndex = 2;
-            baudRateBox.Text = "9600";
+            baudRateBox.Text = "115200";
             // 
             // label1
             // 

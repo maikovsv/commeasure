@@ -1,6 +1,7 @@
 
 
 
+using Microsoft.VisualBasic.Logging;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.IO.Ports;
@@ -58,7 +59,7 @@ namespace meas
         }
 
         private static bool exchange_in_progress = false;
-        private byte[] inPacket = new byte[((int)(TComPkt.len - 1) + MAXDATA)];
+        private byte[] inPacket = new byte[30];
         private byte[] outPacket = new byte[((int)(TComPkt.len - 1) + MAXDATA)];
         public Form1()
         {
@@ -183,18 +184,18 @@ namespace meas
                         dataGridView1.Rows[s].Cells[0].Value = 0;
                     dataGridView1.Rows[s].Cells[1].Value = DateTime.Now;
                     int num = 0;
-                    for (int j = 0; j < LEN_ASCII_NUMBER; j++)
+                    for (int j = 4; j > 0; j--)
                     {
-                        num *= 10;
-                        num += inPacket[(int)TComPkt.data + j] - 0x30;
+                        num *= 256;
+                        num += inPacket[(int)TComPkt.data + j - 1];
                     }
-                    float fraq = 0;
-                    for (int j = LEN_ASCII_FRACTIONAL; j > 0; j--)
+                    int fraq = 0;
+                    for (int j = 8; j > 4; j--)
                     {
-                        fraq /= 10;
-                        fraq += ((float)inPacket[(int)TComPkt.data + j + LEN_ASCII_NUMBER] - 0x30) / 10;
+                        fraq *= 256;
+                        fraq += inPacket[(int)TComPkt.data + j - 1];
                     }
-                    dataGridView1.Rows[s].Cells[2].Value = (num + fraq);
+                    dataGridView1.Rows[s].Cells[2].Value = (num + (float)fraq / System.Math.Pow( 10, (int) System.Math.Log10(fraq) + 1));
                     break;
                 case TComCmd.cmd_measure:
                     break;
