@@ -532,21 +532,32 @@ namespace meas
 
         private void linearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int n = dataGridView2.Rows.Count;
-            if (n > 1)
+            int rs = dataGridView2.Rows.Count;
+            int n = 0;
+            if (rs > 1)
             {
                 float sx = 0;
                 float sy = 0;
                 float sx2 = 0;
                 float syx = 0;
-                for (int i = 0; i < n-1; i++) 
+                for (int i = 0; i < rs-1; i++) 
                 {
+                    if (null == (dataGridView2.Rows[i].Cells[1].Value))
+                    {
+                        continue;
+                    }
+                    n++;
                     float x = float.Parse(dataGridView2.Rows[i].Cells[2].Value.ToString());
                     float y = float.Parse(dataGridView2.Rows[i].Cells[3].Value.ToString());
                     sx += x;
                     sx2 += x * x;
                     syx += y * x;
                     sy += y;
+                }
+                if (n < 2)
+                {
+                    linearapprox.calibrated = false;
+                    return;
                 }
                 sx /= n;
                 sx2 /= n;
