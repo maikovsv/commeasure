@@ -5,6 +5,7 @@ using Microsoft.VisualBasic.Logging;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.IO.Ports;
+using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text.Json.Nodes;
 using System.Windows.Forms;
@@ -13,6 +14,7 @@ namespace meas
 {
     public partial class Form1 : Form
     {
+        private bool calibration = false;
         private const int MAXDATA = 0xF;
         private const int LEN_ASCII_NUMBER = 0x3;
         private const int LEN_ASCII_FRACTIONAL = 0x4;
@@ -44,6 +46,14 @@ namespace meas
             len
         };
 
+        struct linear_coef
+        {
+            public float a; 
+            public float b;
+            public float disp;
+            public bool calibrated;
+        };
+
         enum TComAck
         {
             com_ack = 0x06,             /*!< acknowledgement */
@@ -58,12 +68,17 @@ namespace meas
 
         }
 
+        private static linear_coef linearapprox = new linear_coef();
+
         private static bool exchange_in_progress = false;
         private byte[] inPacket = new byte[30];
         private byte[] outPacket = new byte[((int)(TComPkt.len - 1) + MAXDATA)];
         public Form1()
         {
             InitializeComponent();
+            linearapprox.a = 0;
+            linearapprox.b = 0;
+            linearapprox.disp = 0;
         }
         static readonly SerialPort _serialPort = new SerialPort();
 
@@ -177,25 +192,55 @@ namespace meas
                     }
                     break;
                 case TComCmd.cmd_get_last_data:
-                    int s = dataGridView1.Rows.Add();
-                    if (s > 0)
-                        dataGridView1.Rows[s].Cells[0].Value = (int)(dataGridView1.Rows[s - 1].Cells[0].Value) + 1;
+                    if (calibration)
+                    {
+                        int s = dataGridView2.Rows.Add();
+                        if (s > 0)
+                            dataGridView2.Rows[s].Cells[0].Value = (int)(dataGridView2.Rows[s - 1].Cells[0].Value) + 1;
+                        else
+                            dataGridView2.Rows[s].Cells[0].Value = 0;
+                        int num = 0;
+                        for (int j = 4; j > 0; j--)
+                        {
+                            num *= 256;
+                            num += inPacket[(int)TComPkt.data + j - 1];
+                        }
+                        int fraq = 0;
+                        for (int j = 8; j > 4; j--)
+                        {
+                            fraq *= 256;
+                            fraq += inPacket[(int)TComPkt.data + j - 1];
+                        }
+                        dataGridView2.Rows[s].Cells[2].Value = (num + (float)fraq / System.Math.Pow(10, (int)System.Math.Log10(fraq) + 1));
+                        calibration = false;
+                    }
                     else
-                        dataGridView1.Rows[s].Cells[0].Value = 0;
-                    dataGridView1.Rows[s].Cells[1].Value = DateTime.Now;
-                    int num = 0;
-                    for (int j = 4; j > 0; j--)
                     {
-                        num *= 256;
-                        num += inPacket[(int)TComPkt.data + j - 1];
+                        int s = dataGridView1.Rows.Add();
+                        if (s > 0)
+                            dataGridView1.Rows[s].Cells[0].Value = (int)(dataGridView1.Rows[s - 1].Cells[0].Value) + 1;
+                        else
+                            dataGridView1.Rows[s].Cells[0].Value = 0;
+                        dataGridView1.Rows[s].Cells[1].Value = DateTime.Now;
+                        int num = 0;
+                        for (int j = 4; j > 0; j--)
+                        {
+                            num *= 256;
+                            num += inPacket[(int)TComPkt.data + j - 1];
+                        }
+                        int fraq = 0;
+                        for (int j = 8; j > 4; j--)
+                        {
+                            fraq *= 256;
+                            fraq += inPacket[(int)TComPkt.data + j - 1];
+                        }
+                        double val = (num + (float)fraq / System.Math.Pow(10, (int)System.Math.Log10(fraq) + 1));
+                        dataGridView1.Rows[s].Cells[2].Value = val;
+                        if (linearapprox.calibrated)
+                        {
+                            dataGridView1.Rows[s].Cells[4].Value = linearapprox.a * val + linearapprox.b;
+                        }
                     }
-                    int fraq = 0;
-                    for (int j = 8; j > 4; j--)
-                    {
-                        fraq *= 256;
-                        fraq += inPacket[(int)TComPkt.data + j - 1];
-                    }
-                    dataGridView1.Rows[s].Cells[2].Value = (num + (float)fraq / System.Math.Pow( 10, (int) System.Math.Log10(fraq) + 1));
                     break;
                 case TComCmd.cmd_measure:
                     break;
@@ -444,5 +489,77 @@ namespace meas
             }
         }
 
+        private void getToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            cmdSend(TComCmd.cmd_get_last_data);
+            calibration = true;
+            //if (calibration)
+            //{
+            //    int s = dataGridView2.Rows.Add();
+            //    if (s > 0)
+            //        dataGridView2.Rows[s].Cells[0].Value = (int)(dataGridView2.Rows[s - 1].Cells[0].Value) + 1;
+            //    else
+            //        dataGridView2.Rows[s].Cells[0].Value = 0;
+            //    //dataGridView2.Rows[s].Cells[1].Value = DateTime.Now;
+            //    //int num = 0;
+            //    //for (int j = 4; j > 0; j--)
+            //    //{
+            //    //    num *= 256;
+            //    //    num += inPacket[(int)TComPkt.data + j - 1];
+            //    //}
+            //    //int fraq = 0;
+            //    //for (int j = 8; j > 4; j--)
+            //    //{
+            //    //    fraq *= 256;
+            //    //    fraq += inPacket[(int)TComPkt.data + j - 1];
+            //    //}
+            //    Random r = new Random();
+
+            //    dataGridView2.Rows[s].Cells[2].Value = r.Next(0, 1000) / 10.0f;
+            //    calibration = false;
+            //}
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void add0ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            add0ToolStripMenuItem.Checked = !add0ToolStripMenuItem.Checked;
+        }
+
+        private void linearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int n = dataGridView2.Rows.Count;
+            if (n > 1)
+            {
+                float sx = 0;
+                float sy = 0;
+                float sx2 = 0;
+                float syx = 0;
+                for (int i = 0; i < n-1; i++) 
+                {
+                    float x = float.Parse(dataGridView2.Rows[i].Cells[2].Value.ToString());
+                    float y = float.Parse(dataGridView2.Rows[i].Cells[3].Value.ToString());
+                    sx += x;
+                    sx2 += x * x;
+                    syx += y * x;
+                    sy += y;
+                }
+                sx /= n;
+                sx2 /= n;
+                syx /= n;
+                sy /= n;
+                if ((sx2 - sx * sx) != 0)
+                {
+                    linearapprox.a = (syx - sx * sy) / (sx2 - sx * sx);
+                    linearapprox.b = sy - linearapprox.a * sx;
+                    label10.Text = "y = " + linearapprox.a.ToString() + "x + " + linearapprox.b.ToString();
+                    linearapprox.calibrated = true;
+                }
+            }
+        }
     }
 }

@@ -41,6 +41,13 @@
             getStatusToolStripMenuItem = new ToolStripMenuItem();
             measureToolStripMenuItem = new ToolStripMenuItem();
             getDataToolStripMenuItem = new ToolStripMenuItem();
+            calibrationToolStripMenuItem = new ToolStripMenuItem();
+            getToolStripMenuItem = new ToolStripMenuItem();
+            add0ToolStripMenuItem = new ToolStripMenuItem();
+            separator2ToolStripMenuItem = new ToolStripSeparator();
+            linearToolStripMenuItem = new ToolStripMenuItem();
+            cubicToolStripMenuItem = new ToolStripMenuItem();
+            expToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
@@ -79,6 +86,11 @@
             val = new DataGridViewTextBoxColumn();
             tabPage3 = new TabPage();
             label10 = new Label();
+            dataGridView2 = new DataGridView();
+            IdCal = new DataGridViewTextBoxColumn();
+            Use = new DataGridViewCheckBoxColumn();
+            Measure = new DataGridViewTextBoxColumn();
+            ValueCal = new DataGridViewTextBoxColumn();
             comTimer = new System.Windows.Forms.Timer(components);
             saveFileDialog1 = new SaveFileDialog();
             openFileDialog1 = new OpenFileDialog();
@@ -90,11 +102,12 @@
             tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, deviceToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, deviceToolStripMenuItem, calibrationToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -168,6 +181,53 @@
             getDataToolStripMenuItem.Size = new Size(126, 22);
             getDataToolStripMenuItem.Text = "Get data";
             getDataToolStripMenuItem.Click += getDataToolStripMenuItem_Click;
+            // 
+            // calibrationToolStripMenuItem
+            // 
+            calibrationToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { getToolStripMenuItem, add0ToolStripMenuItem, separator2ToolStripMenuItem, linearToolStripMenuItem, cubicToolStripMenuItem, expToolStripMenuItem });
+            calibrationToolStripMenuItem.Name = "calibrationToolStripMenuItem";
+            calibrationToolStripMenuItem.Size = new Size(77, 20);
+            calibrationToolStripMenuItem.Text = "Calibration";
+            // 
+            // getToolStripMenuItem
+            // 
+            getToolStripMenuItem.Name = "getToolStripMenuItem";
+            getToolStripMenuItem.Size = new Size(180, 22);
+            getToolStripMenuItem.Text = "Get measure";
+            getToolStripMenuItem.Click += getToolStripMenuItem_Click;
+            // 
+            // add0ToolStripMenuItem
+            // 
+            add0ToolStripMenuItem.Name = "add0ToolStripMenuItem";
+            add0ToolStripMenuItem.Size = new Size(180, 22);
+            add0ToolStripMenuItem.Text = "Force (0;0)";
+            add0ToolStripMenuItem.Click += add0ToolStripMenuItem_Click;
+            // 
+            // separator2ToolStripMenuItem
+            // 
+            separator2ToolStripMenuItem.Name = "separator2ToolStripMenuItem";
+            separator2ToolStripMenuItem.Size = new Size(177, 6);
+            // 
+            // linearToolStripMenuItem
+            // 
+            linearToolStripMenuItem.Name = "linearToolStripMenuItem";
+            linearToolStripMenuItem.Size = new Size(180, 22);
+            linearToolStripMenuItem.Text = "Linear";
+            linearToolStripMenuItem.Click += linearToolStripMenuItem_Click;
+            // 
+            // cubicToolStripMenuItem
+            // 
+            cubicToolStripMenuItem.Enabled = false;
+            cubicToolStripMenuItem.Name = "cubicToolStripMenuItem";
+            cubicToolStripMenuItem.Size = new Size(180, 22);
+            cubicToolStripMenuItem.Text = "Cubic";
+            // 
+            // expToolStripMenuItem
+            // 
+            expToolStripMenuItem.Enabled = false;
+            expToolStripMenuItem.Name = "expToolStripMenuItem";
+            expToolStripMenuItem.Size = new Size(180, 22);
+            expToolStripMenuItem.Text = "Exp";
             // 
             // statusStrip1
             // 
@@ -463,6 +523,7 @@
             dataGridView1.Name = "dataGridView1";
             dataGridView1.Size = new Size(786, 370);
             dataGridView1.TabIndex = 0;
+            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
             // id
             // 
@@ -496,6 +557,7 @@
             // tabPage3
             // 
             tabPage3.Controls.Add(label10);
+            tabPage3.Controls.Add(dataGridView2);
             tabPage3.ImeMode = ImeMode.NoControl;
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
@@ -507,11 +569,43 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new Point(382, 181);
+            label10.Location = new Point(631, 37);
             label10.Name = "label10";
-            label10.Size = new Size(29, 15);
-            label10.TabIndex = 16;
-            label10.Text = "N/A";
+            label10.Size = new Size(48, 15);
+            label10.TabIndex = 1;
+            label10.Text = "y=ax+b";
+            // 
+            // dataGridView2
+            // 
+            dataGridView2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView2.Columns.AddRange(new DataGridViewColumn[] { IdCal, Use, Measure, ValueCal });
+            dataGridView2.Location = new Point(3, 3);
+            dataGridView2.Name = "dataGridView2";
+            dataGridView2.Size = new Size(608, 370);
+            dataGridView2.TabIndex = 0;
+            // 
+            // IdCal
+            // 
+            IdCal.Frozen = true;
+            IdCal.HeaderText = "Id";
+            IdCal.Name = "IdCal";
+            IdCal.ReadOnly = true;
+            // 
+            // Use
+            // 
+            Use.HeaderText = "Use";
+            Use.Name = "Use";
+            // 
+            // Measure
+            // 
+            Measure.HeaderText = "Measure";
+            Measure.Name = "Measure";
+            // 
+            // ValueCal
+            // 
+            ValueCal.HeaderText = "Value";
+            ValueCal.Name = "ValueCal";
             // 
             // comTimer
             // 
@@ -553,6 +647,7 @@
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             tabPage3.ResumeLayout(false);
             tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -591,7 +686,6 @@
         private Label IDLabel;
         private Button dConnect;
         private Label label9;
-        private Label label10;
         private System.Windows.Forms.Timer comTimer;
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ToolStripStatusLabel toolStripStatusLabel2;
@@ -611,5 +705,18 @@
         private OpenFileDialog openFileDialog1;
         private ToolStripStatusLabel toolStripStatusLabel4;
         private ToolStripStatusLabel toolStripStatusLabel5;
+        private ToolStripMenuItem calibrationToolStripMenuItem;
+        private ToolStripMenuItem linearToolStripMenuItem;
+        private ToolStripMenuItem cubicToolStripMenuItem;
+        private ToolStripMenuItem expToolStripMenuItem;
+        private DataGridView dataGridView2;
+        private ToolStripMenuItem getToolStripMenuItem;
+        private ToolStripSeparator separator2ToolStripMenuItem;
+        private DataGridViewTextBoxColumn IdCal;
+        private DataGridViewCheckBoxColumn Use;
+        private DataGridViewTextBoxColumn Measure;
+        private DataGridViewTextBoxColumn ValueCal;
+        private ToolStripMenuItem add0ToolStripMenuItem;
+        private Label label10;
     }
 }
