@@ -50,17 +50,10 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.idDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.valueDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.rawDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.timeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.measureBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.button1_add = new System.Windows.Forms.Button();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.idDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.rawDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.valueDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.calibrationBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.calibrationBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.bindingSource2 = new System.Windows.Forms.BindingSource(this.components);
@@ -95,6 +88,13 @@
             this.formula = new System.Windows.Forms.Label();
             this.exp_approx = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.idDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.valueDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.rawDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.timeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.idDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.rawDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.valueDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
@@ -313,42 +313,6 @@
             this.dataGridView1.Size = new System.Drawing.Size(526, 289);
             this.dataGridView1.TabIndex = 3;
             // 
-            // idDataGridViewTextBoxColumn1
-            // 
-            this.idDataGridViewTextBoxColumn1.DataPropertyName = "Id";
-            this.idDataGridViewTextBoxColumn1.HeaderText = "Id";
-            this.idDataGridViewTextBoxColumn1.MinimumWidth = 6;
-            this.idDataGridViewTextBoxColumn1.Name = "idDataGridViewTextBoxColumn1";
-            this.idDataGridViewTextBoxColumn1.ReadOnly = true;
-            this.idDataGridViewTextBoxColumn1.Width = 125;
-            // 
-            // valueDataGridViewTextBoxColumn1
-            // 
-            this.valueDataGridViewTextBoxColumn1.DataPropertyName = "Value";
-            this.valueDataGridViewTextBoxColumn1.HeaderText = "Value";
-            this.valueDataGridViewTextBoxColumn1.MinimumWidth = 6;
-            this.valueDataGridViewTextBoxColumn1.Name = "valueDataGridViewTextBoxColumn1";
-            this.valueDataGridViewTextBoxColumn1.ReadOnly = true;
-            this.valueDataGridViewTextBoxColumn1.Width = 125;
-            // 
-            // rawDataGridViewTextBoxColumn1
-            // 
-            this.rawDataGridViewTextBoxColumn1.DataPropertyName = "Raw";
-            this.rawDataGridViewTextBoxColumn1.HeaderText = "Raw";
-            this.rawDataGridViewTextBoxColumn1.MinimumWidth = 6;
-            this.rawDataGridViewTextBoxColumn1.Name = "rawDataGridViewTextBoxColumn1";
-            this.rawDataGridViewTextBoxColumn1.ReadOnly = true;
-            this.rawDataGridViewTextBoxColumn1.Width = 125;
-            // 
-            // timeDataGridViewTextBoxColumn
-            // 
-            this.timeDataGridViewTextBoxColumn.DataPropertyName = "Time";
-            this.timeDataGridViewTextBoxColumn.HeaderText = "Time";
-            this.timeDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.timeDataGridViewTextBoxColumn.Name = "timeDataGridViewTextBoxColumn";
-            this.timeDataGridViewTextBoxColumn.ReadOnly = true;
-            this.timeDataGridViewTextBoxColumn.Width = 125;
-            // 
             // measureBindingSource
             // 
             this.measureBindingSource.DataMember = "measure";
@@ -404,32 +368,6 @@
             this.dataGridView2.RowTemplate.Height = 24;
             this.dataGridView2.Size = new System.Drawing.Size(480, 289);
             this.dataGridView2.TabIndex = 0;
-            // 
-            // idDataGridViewTextBoxColumn
-            // 
-            this.idDataGridViewTextBoxColumn.DataPropertyName = "Id";
-            this.idDataGridViewTextBoxColumn.HeaderText = "Id";
-            this.idDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.idDataGridViewTextBoxColumn.Name = "idDataGridViewTextBoxColumn";
-            this.idDataGridViewTextBoxColumn.ReadOnly = true;
-            this.idDataGridViewTextBoxColumn.Width = 125;
-            // 
-            // rawDataGridViewTextBoxColumn
-            // 
-            this.rawDataGridViewTextBoxColumn.DataPropertyName = "Raw";
-            this.rawDataGridViewTextBoxColumn.HeaderText = "Raw";
-            this.rawDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.rawDataGridViewTextBoxColumn.Name = "rawDataGridViewTextBoxColumn";
-            this.rawDataGridViewTextBoxColumn.ReadOnly = true;
-            this.rawDataGridViewTextBoxColumn.Width = 125;
-            // 
-            // valueDataGridViewTextBoxColumn
-            // 
-            this.valueDataGridViewTextBoxColumn.DataPropertyName = "Value";
-            this.valueDataGridViewTextBoxColumn.HeaderText = "Value";
-            this.valueDataGridViewTextBoxColumn.MinimumWidth = 6;
-            this.valueDataGridViewTextBoxColumn.Name = "valueDataGridViewTextBoxColumn";
-            this.valueDataGridViewTextBoxColumn.Width = 125;
             // 
             // calibrationBindingSource1
             // 
@@ -739,6 +677,68 @@
             this.button3.Text = "Log";
             this.button3.UseVisualStyleBackColor = true;
             // 
+            // idDataGridViewTextBoxColumn1
+            // 
+            this.idDataGridViewTextBoxColumn1.DataPropertyName = "Id";
+            this.idDataGridViewTextBoxColumn1.HeaderText = "Id";
+            this.idDataGridViewTextBoxColumn1.MinimumWidth = 6;
+            this.idDataGridViewTextBoxColumn1.Name = "idDataGridViewTextBoxColumn1";
+            this.idDataGridViewTextBoxColumn1.ReadOnly = true;
+            this.idDataGridViewTextBoxColumn1.Width = 50;
+            // 
+            // valueDataGridViewTextBoxColumn1
+            // 
+            this.valueDataGridViewTextBoxColumn1.DataPropertyName = "Value";
+            this.valueDataGridViewTextBoxColumn1.HeaderText = "Value";
+            this.valueDataGridViewTextBoxColumn1.MinimumWidth = 6;
+            this.valueDataGridViewTextBoxColumn1.Name = "valueDataGridViewTextBoxColumn1";
+            this.valueDataGridViewTextBoxColumn1.ReadOnly = true;
+            this.valueDataGridViewTextBoxColumn1.Width = 125;
+            // 
+            // rawDataGridViewTextBoxColumn1
+            // 
+            this.rawDataGridViewTextBoxColumn1.DataPropertyName = "Raw";
+            this.rawDataGridViewTextBoxColumn1.HeaderText = "Raw";
+            this.rawDataGridViewTextBoxColumn1.MinimumWidth = 6;
+            this.rawDataGridViewTextBoxColumn1.Name = "rawDataGridViewTextBoxColumn1";
+            this.rawDataGridViewTextBoxColumn1.ReadOnly = true;
+            this.rawDataGridViewTextBoxColumn1.Width = 125;
+            // 
+            // timeDataGridViewTextBoxColumn
+            // 
+            this.timeDataGridViewTextBoxColumn.DataPropertyName = "Time";
+            this.timeDataGridViewTextBoxColumn.HeaderText = "Time";
+            this.timeDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.timeDataGridViewTextBoxColumn.Name = "timeDataGridViewTextBoxColumn";
+            this.timeDataGridViewTextBoxColumn.ReadOnly = true;
+            this.timeDataGridViewTextBoxColumn.Width = 125;
+            // 
+            // idDataGridViewTextBoxColumn
+            // 
+            this.idDataGridViewTextBoxColumn.DataPropertyName = "Id";
+            this.idDataGridViewTextBoxColumn.HeaderText = "Id";
+            this.idDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.idDataGridViewTextBoxColumn.Name = "idDataGridViewTextBoxColumn";
+            this.idDataGridViewTextBoxColumn.ReadOnly = true;
+            this.idDataGridViewTextBoxColumn.Width = 50;
+            // 
+            // rawDataGridViewTextBoxColumn
+            // 
+            this.rawDataGridViewTextBoxColumn.DataPropertyName = "Raw";
+            this.rawDataGridViewTextBoxColumn.HeaderText = "Raw";
+            this.rawDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.rawDataGridViewTextBoxColumn.Name = "rawDataGridViewTextBoxColumn";
+            this.rawDataGridViewTextBoxColumn.ReadOnly = true;
+            this.rawDataGridViewTextBoxColumn.Width = 125;
+            // 
+            // valueDataGridViewTextBoxColumn
+            // 
+            this.valueDataGridViewTextBoxColumn.DataPropertyName = "Value";
+            this.valueDataGridViewTextBoxColumn.HeaderText = "Value";
+            this.valueDataGridViewTextBoxColumn.MinimumWidth = 6;
+            this.valueDataGridViewTextBoxColumn.Name = "valueDataGridViewTextBoxColumn";
+            this.valueDataGridViewTextBoxColumn.Width = 125;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -804,10 +804,6 @@
         private System.Data.DataColumn dataColumn7;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dataGridView2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn idDataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn valueDataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn rawDataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn timeDataGridViewTextBoxColumn;
         private System.Windows.Forms.BindingSource measureBindingSource;
         private System.Windows.Forms.BindingSource calibrationBindingSource;
         private System.Windows.Forms.BindingSource bindingSource2;
@@ -817,9 +813,6 @@
         private System.Data.DataColumn dataColumn5;
         private System.Data.DataColumn dataColumn6;
         private System.Windows.Forms.Button button1_add;
-        private System.Windows.Forms.DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn rawDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn valueDataGridViewTextBoxColumn;
         private System.Windows.Forms.BindingSource calibrationBindingSource1;
         private System.Windows.Forms.ComboBox comboBox1_com;
         private System.Windows.Forms.TextBox textBox1_baud;
@@ -846,6 +839,13 @@
         private System.Windows.Forms.Button calc_linear;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button exp_approx;
+        private System.Windows.Forms.DataGridViewTextBoxColumn idDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn valueDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn rawDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn timeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn rawDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn valueDataGridViewTextBoxColumn;
     }
 }
 
