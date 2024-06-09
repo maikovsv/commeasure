@@ -93,6 +93,8 @@
             this.GetCalibr = new System.Windows.Forms.Button();
             this.calc_linear = new System.Windows.Forms.Button();
             this.formula = new System.Windows.Forms.Label();
+            this.exp_approx = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
@@ -209,6 +211,7 @@
             // 
             // openToolStripMenuItem
             // 
+            this.openToolStripMenuItem.Enabled = false;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
@@ -216,6 +219,7 @@
             // 
             // closeToolStripMenuItem
             // 
+            this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeToolStripMenuItem.Text = "Save";
@@ -247,6 +251,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(600, 320);
             this.tabControl1.TabIndex = 6;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
             // tabPage2
             // 
@@ -351,6 +356,8 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.button3);
+            this.tabPage3.Controls.Add(this.exp_approx);
             this.tabPage3.Controls.Add(this.formula);
             this.tabPage3.Controls.Add(this.calc_linear);
             this.tabPage3.Controls.Add(this.GetCalibr);
@@ -696,19 +703,41 @@
             this.calc_linear.Name = "calc_linear";
             this.calc_linear.Size = new System.Drawing.Size(102, 23);
             this.calc_linear.TabIndex = 3;
-            this.calc_linear.Text = "y = ax + b";
+            this.calc_linear.Text = "Linear";
             this.calc_linear.UseVisualStyleBackColor = true;
             this.calc_linear.Click += new System.EventHandler(this.calc_linear_Click);
             // 
             // formula
             // 
-            this.formula.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.formula.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.formula.AutoSize = true;
-            this.formula.Location = new System.Drawing.Point(487, 84);
+            this.formula.Location = new System.Drawing.Point(487, 278);
             this.formula.Name = "formula";
-            this.formula.Size = new System.Drawing.Size(53, 13);
+            this.formula.Size = new System.Drawing.Size(24, 13);
             this.formula.TabIndex = 4;
-            this.formula.Text = "y = ax + b";
+            this.formula.Text = "y = ";
+            // 
+            // exp_approx
+            // 
+            this.exp_approx.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.exp_approx.Enabled = false;
+            this.exp_approx.Location = new System.Drawing.Point(487, 87);
+            this.exp_approx.Name = "exp_approx";
+            this.exp_approx.Size = new System.Drawing.Size(102, 23);
+            this.exp_approx.TabIndex = 5;
+            this.exp_approx.Text = "Exp";
+            this.exp_approx.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Enabled = false;
+            this.button3.Location = new System.Drawing.Point(487, 116);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(102, 23);
+            this.button3.TabIndex = 6;
+            this.button3.Text = "Log";
+            this.button3.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -721,7 +750,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Oremeter";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
@@ -815,6 +844,8 @@
         private System.Windows.Forms.Button GetCalibr;
         private System.Windows.Forms.Label formula;
         private System.Windows.Forms.Button calc_linear;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button exp_approx;
     }
 }
 

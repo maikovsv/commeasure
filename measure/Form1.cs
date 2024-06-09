@@ -271,7 +271,14 @@ namespace measure
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             string Path = saveFileDialog1.FileName;
-            dataSet1.WriteXml(Path);
+            if (tabControl1.SelectedTab == tabControl1.TabPages[1])
+            {
+                dataSet1.WriteXml(Path);
+            }
+            else if (tabControl1.SelectedTab == tabControl1.TabPages[2])
+            {
+                dataSet2.WriteXml(Path);
+            }
         }
         private void button2_Click(object sender, EventArgs e)
         {
@@ -288,7 +295,14 @@ namespace measure
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             string Path = openFileDialog1.FileName;
-            dataSet1.ReadXml(Path);
+            if (tabControl1.SelectedTab == tabControl1.TabPages[1])
+            {
+                dataSet1.ReadXml(Path);
+            }
+            else if (tabControl1.SelectedTab == tabControl1.TabPages[2])
+            {
+                dataSet2.ReadXml(Path);
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -478,6 +492,21 @@ namespace measure
         private void calc_linear_Click(object sender, EventArgs e)
         {
             linear_calc();
+        }
+
+        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            if (tabControl1.SelectedTab == tabControl1.TabPages[0])
+            {
+                openToolStripMenuItem.Enabled = false;
+                closeToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                openToolStripMenuItem.Enabled = true;
+                closeToolStripMenuItem.Enabled = true;
+            }
+
         }
     }
 }
