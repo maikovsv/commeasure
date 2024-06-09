@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -72,12 +74,198 @@ namespace measure
         private static bool exchange_in_progress = false;
         private byte[] inPacket = new byte[30];
         private byte[] outPacket = new byte[((int)(TComPkt.len - 1) + MAXDATA)];
+        static readonly SerialPort _serialPort = new SerialPort();
+
         public Form1()
         {
             InitializeComponent();
             linearapprox.a = 0;
             linearapprox.b = 0;
             linearapprox.disp = 0;
+        }
+        private string com_read()
+        {
+            string res = "";
+            if (!_serialPort.IsOpen)
+            {
+                exchange_in_progress = false;
+                return res;
+            }
+            int i = 0;
+            while (_serialPort.BytesToRead > 0)
+            {
+                byte getted = (byte)_serialPort.ReadByte();
+                inPacket[i++] = getted;
+                res += " 0x";
+                byte tmp = (byte)(getted / 16);
+                if (tmp > 9)
+                {
+                    res += (char)(tmp + 'A' - 10);
+                }
+                else
+                {
+                    res += tmp;
+                }
+                tmp = (byte)(getted % 16);
+                if (tmp > 9)
+                {
+                    res += (char)(tmp + 'A' - 10);
+                }
+                else
+                {
+                    res += tmp;
+                }
+            }
+            exchange_in_progress = false;
+            return res;
+        }
+        private void com_send()
+        {
+            if (_serialPort.IsOpen)
+            {
+                if (++outPacket[(int)TComPkt.seq] > 255)
+                    outPacket[(int)TComPkt.seq] = 0;
+                _serialPort.Write(outPacket, 0, (int)(TComPkt.len - 1) + outPacket[(int)TComPkt.datalen]);
+                comTimer.Start();
+            }
+        }
+
+
+        private TPacketStatus comPacketHandler()
+        {
+            /*if (crcIsNotOk)
+            {
+                setStatus2("Check summ error");                
+                return TPacketStatus.crcErr
+            }*/
+            if (inPacket[(int)TComPkt.seq] != outPacket[(int)TComPkt.seq])
+            {
+                setStatus("Sequence error!");
+                return TPacketStatus.seqErr;
+            }
+            switch ((TComCmd)inPacket[(int)TComPkt.cmd])
+            {
+                case TComCmd.cmd_ack:
+                    switch ((TComAck)inPacket[(int)TComPkt.data])
+                    {
+                        case TComAck.com_ack:
+                            statusLabel.Text = "Ok!";
+                            break;
+                        case TComAck.com_nack:
+                            statusLabel.Text = "Nack!";
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case TComCmd.cmd_get_status:
+                    switch ((TComStatus)inPacket[(int)TComPkt.data])
+                    {
+                        case TComStatus.status_ready:
+                            break;
+                        case TComStatus.status_measurement:
+                            break;
+                        case TComStatus.status_error:
+                            break;
+                        case TComStatus.status_busy:
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case TComCmd.cmd_get_last_data:
+                    if (calibration)
+                    {
+                        dataSet2.Tables[0].Rows.Add();
+                        int num = 0;
+                        for (int j = 0; j < 3; j++)
+                        {
+                            num *= 10;
+                            num += inPacket[(int)TComPkt.data + j] - 48;
+                        }
+                        int fraq = 0;
+                        for (int j = 4; j < 8; j++)
+                        {
+                            fraq *= 10;
+                            fraq += inPacket[(int)TComPkt.data + j] - 48;
+                        }
+                        dataSet2.Tables[0].Columns[1].ReadOnly = false;
+                        dataSet2.Tables[0].Rows[dataSet2.Tables[0].Rows.Count-1][1] = (num + (float)fraq / System.Math.Pow(10, (int)System.Math.Log10(fraq) + 1));
+                        dataSet2.Tables[0].Columns[1].ReadOnly = true;
+                        calibration = false;
+                    }
+                    else
+                    {
+                        dataSet1.Tables[0].Rows.Add();
+                        dataSet1.Tables[0].Columns[3].ReadOnly = false;
+                        dataSet1.Tables[0].Rows[dataSet1.Tables[0].Rows.Count - 1][3] = DateTime.Now;
+                        dataSet1.Tables[0].Columns[3].ReadOnly = true;
+                        int num = 0;
+                        for (int j = 0; j < 3; j++)
+                        {
+                            num *= 10;
+                            num += inPacket[(int)TComPkt.data + j] - 48;
+                        }
+                        int fraq = 0;
+                        for (int j = 4; j < 8; j++)
+                        {
+                            fraq *= 10;
+                            fraq += inPacket[(int)TComPkt.data + j] - 48;
+                        }
+                        double val = (num + (float)fraq / System.Math.Pow(10, (int)System.Math.Log10(fraq) + 1));
+                        dataSet1.Tables[0].Columns[2].ReadOnly = false;
+                        dataSet1.Tables[0].Rows[dataSet1.Tables[0].Rows.Count - 1][2] = val;
+                        dataSet1.Tables[0].Columns[2].ReadOnly = true;
+                        if (linearapprox.calibrated)
+                        {
+                            dataSet1.Tables[0].Columns[1].ReadOnly = false;
+                            dataSet1.Tables[0].Rows[dataSet1.Tables[0].Rows.Count - 1][1] = linearapprox.a * val + linearapprox.b;
+                            dataSet1.Tables[0].Columns[1].ReadOnly = true;
+                        }
+                    }
+                    break;
+                case TComCmd.cmd_measure:
+                    break;
+                default:
+                    break;
+            }
+            return TPacketStatus.ok;
+        }
+
+        private void cmdSend(TComCmd c)
+        {
+            if (exchange_in_progress)
+                return;
+            exchange_in_progress = true;
+            outPacket[(int)TComPkt.cmd] = (byte)c;
+            switch (c)
+            {
+                case TComCmd.cmd_ack:
+                    outPacket[(int)TComPkt.datalen] = 0;
+                    break;
+                case TComCmd.cmd_get_status:
+                    outPacket[(int)TComPkt.datalen] = 0;
+                    break;
+                case TComCmd.cmd_get_last_data:
+                    outPacket[(int)TComPkt.datalen] = 0;
+                    break;
+                case TComCmd.cmd_measure:
+                    outPacket[(int)TComPkt.datalen] = 0;
+                    break;
+                default:
+                    break;
+            }
+            com_send();
+        }
+
+        private void com_refresh()
+        {
+            comboBox1_com.Items.Clear();
+            comboBox1_com.Items.AddRange(SerialPort.GetPortNames());
+            if (comboBox1_com.Items.Count > 0)
+            {
+                comboBox1_com.SelectedItem = comboBox1_com.Items[0];
+            }
         }
 
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
@@ -87,13 +275,14 @@ namespace measure
         }
         private void button2_Click(object sender, EventArgs e)
         {
-            dataSet1.Tables[0].Rows.Add();
+            cmdSend(TComCmd.cmd_measure);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             bindingSource1.DataSource = dataSet1.Tables[0];
             dataGridView1.DataSource = bindingSource1;
+            com_refresh();
         }
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
@@ -104,6 +293,10 @@ namespace measure
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (_serialPort.IsOpen)
+            {
+                _serialPort.Close();
+            }
             Application.Exit();
         }
 
@@ -119,8 +312,172 @@ namespace measure
 
         private void button1_add_Click(object sender, EventArgs e)
         {
-            dataSet2.Tables[0].Rows.Add();
+            cmdSend(TComCmd.cmd_measure);
 
+        }
+
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comRefresh_Click(object sender, EventArgs e)
+        {
+            com_refresh();
+        }
+
+        private void numericUpDown1_timeout_ValueChanged(object sender, EventArgs e)
+        {
+            comTimer.Interval = (int)numericUpDown1_timeout.Value;
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_serialPort.IsOpen)
+            {
+                _serialPort.Close();
+            }
+        }
+
+        private void comTimer_Tick(object sender, EventArgs e)
+        {
+            comTimer.Stop();
+            toolStripStatusLabel3.Text = com_read();
+            comPacketHandler();
+        }
+
+        private void Connect_Click(object sender, EventArgs e)
+        {
+            if (_serialPort.IsOpen)
+            {
+                _serialPort.Close();
+            }
+            if (comboBox1_com.Items.Count > 0)
+            {
+                _serialPort.PortName = comboBox1_com.Text;
+            }
+            else
+            {
+                setStatus("no ports found");
+            }
+            _serialPort.BaudRate = Int32.Parse(textBox1_baud.Text);
+            _serialPort.DataBits = Int32.Parse(textBox1_data.Text);
+            switch (comboBox1_parity.Text)
+            {
+                case "NONE":
+                    _serialPort.Parity = Parity.None;
+                    break;
+                case "ODD":
+                    _serialPort.Parity = Parity.Odd;
+                    break;
+                case "EVEN":
+                    _serialPort.Parity = Parity.Even;
+                    break;
+                default:
+                    setStatus("parity set error");
+                    return;
+            }
+            switch (comboBox1_stop.Text)
+            {
+                case "0":
+                    _serialPort.StopBits = StopBits.None;
+                    break;
+                case "1":
+                    _serialPort.StopBits = StopBits.One;
+                    break;
+                case "1.5":
+                    _serialPort.StopBits = StopBits.OnePointFive;
+                    break;
+                case "2":
+                    _serialPort.StopBits = StopBits.Two;
+                    break;
+                default:
+                    setStatus("stop bit set error");
+                    return;
+            }
+            _serialPort.PortName = comboBox1_com.Text;
+            _serialPort.Open();
+            if (!_serialPort.IsOpen)
+            {
+                setStatus("port open error");
+                return;
+            }
+            setStatus("opend " +
+                _serialPort.PortName + " (" +
+                _serialPort.BaudRate + "," +
+                _serialPort.DataBits + "," +
+                _serialPort.Parity + "," +
+                _serialPort.StopBits + ")");
+            cmdSend(TComCmd.cmd_ack);
+        }
+
+        private void setStatus(string s)
+        {
+            toolStripStatusLabel1.Text = s;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            cmdSend(TComCmd.cmd_get_last_data);
+            calibration = false;
+        }
+
+        private void GetCalibr_Click(object sender, EventArgs e)
+        {
+            cmdSend(TComCmd.cmd_get_last_data);
+            calibration = true;
+        }
+        private void linear_calc()
+        {
+            int rs = dataGridView2.Rows.Count;
+            int n = 0;
+            if (rs > 1)
+            {
+                float sx = 0;
+                float sy = 0;
+                float sx2 = 0;
+                float syx = 0;
+                for (int i = 0; i < rs - 1; i++)
+                {
+                    if (null == (dataSet2.Tables[0].Rows[i][2]))
+                    {
+                        continue;
+                    }
+                    n++;
+                    float x = float.Parse(dataSet2.Tables[0].Rows[i][1].ToString());
+                    float y = float.Parse(dataSet2.Tables[0].Rows[i][2].ToString());
+                    sx += x;
+                    sx2 += x * x;
+                    syx += y * x;
+                    sy += y;
+                }
+                if (n < 2)
+                {
+                    linearapprox.calibrated = false;
+                    return;
+                }
+                sx /= n;
+                sx2 /= n;
+                syx /= n;
+                sy /= n;
+                if ((sx2 - sx * sx) != 0)
+                {
+                    linearapprox.a = (syx - sx * sy) / (sx2 - sx * sx);
+                    linearapprox.b = sy - linearapprox.a * sx;
+                    formula.Text = "y = " + linearapprox.a.ToString("0.00") + "x " + (linearapprox.b < 0 ? "-" : "+") + " " + Math.Abs(linearapprox.b).ToString("0.00");
+                    linearapprox.calibrated = true;
+                }
+            }
+        }
+
+        private void calc_linear_Click(object sender, EventArgs e)
+        {
+            linear_calc();
         }
     }
 }
