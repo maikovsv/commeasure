@@ -508,5 +508,20 @@ namespace measure
             }
 
         }
+
+        private void reCalc_Click(object sender, EventArgs e)
+        {
+            if (linearapprox.calibrated)
+            {
+                dataSet1.Tables[0].Columns[1].ReadOnly = false;
+                for (int i = 0; i < dataSet1.Tables[0].Rows.Count; i++)
+                {
+                    double val = float.Parse(dataSet1.Tables[0].Rows[i][2].ToString());
+                    dataSet1.Tables[0].Rows[i][1] = linearapprox.a * val + linearapprox.b;
+
+                }
+                dataSet1.Tables[0].Columns[1].ReadOnly = true;
+            }
+        }
     }
 }

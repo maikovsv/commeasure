@@ -95,6 +95,7 @@
             this.idDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.rawDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.valueDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.reCalc = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
@@ -282,6 +283,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.reCalc);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.dataGridView1);
             this.tabPage1.Controls.Add(this.button2);
@@ -739,6 +741,16 @@
             this.valueDataGridViewTextBoxColumn.Name = "valueDataGridViewTextBoxColumn";
             this.valueDataGridViewTextBoxColumn.Width = 125;
             // 
+            // reCalc
+            // 
+            this.reCalc.Location = new System.Drawing.Point(533, 58);
+            this.reCalc.Name = "reCalc";
+            this.reCalc.Size = new System.Drawing.Size(56, 23);
+            this.reCalc.TabIndex = 5;
+            this.reCalc.Text = "Recalc";
+            this.reCalc.UseVisualStyleBackColor = true;
+            this.reCalc.Click += new System.EventHandler(this.reCalc_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -846,6 +858,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn rawDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn valueDataGridViewTextBoxColumn;
+        private System.Windows.Forms.Button reCalc;
     }
 }
 
