@@ -178,16 +178,16 @@ namespace measure
                     {
                         dataSet2.Tables[0].Rows.Add();
                         int num = 0;
-                        for (int j = 0; j < 3; j++)
+                        for (int j = 3; j >= 0; j--)
                         {
-                            num *= 10;
-                            num += inPacket[(int)TComPkt.data + j] - 48;
+                            num *= 256;
+                            num += inPacket[(int)TComPkt.data + j];
                         }
                         int fraq = 0;
-                        for (int j = 4; j < 8; j++)
+                        for (int j = 7; j >= 4; j--)
                         {
-                            fraq *= 10;
-                            fraq += inPacket[(int)TComPkt.data + j] - 48;
+                            fraq *= 256;
+                            fraq += inPacket[(int)TComPkt.data + j];
                         }
                         dataSet2.Tables[0].Columns[1].ReadOnly = false;
                         dataSet2.Tables[0].Rows[dataSet2.Tables[0].Rows.Count-1][1] = (num + (float)fraq / System.Math.Pow(10, (int)System.Math.Log10(fraq) + 1));
@@ -201,16 +201,16 @@ namespace measure
                         dataSet1.Tables[0].Rows[dataSet1.Tables[0].Rows.Count - 1][3] = DateTime.Now;
                         dataSet1.Tables[0].Columns[3].ReadOnly = true;
                         int num = 0;
-                        for (int j = 0; j < 3; j++)
+                        for (int j = 3; j >= 0; j--)
                         {
-                            num *= 10;
-                            num += inPacket[(int)TComPkt.data + j] - 48;
+                            num *= 256;
+                            num += inPacket[(int)TComPkt.data + j];
                         }
                         int fraq = 0;
-                        for (int j = 4; j < 8; j++)
+                        for (int j = 7; j >=4; j--)
                         {
-                            fraq *= 10;
-                            fraq += inPacket[(int)TComPkt.data + j] - 48;
+                            fraq *= 256;
+                            fraq += inPacket[(int)TComPkt.data + j];
                         }
                         double val = (num + (float)fraq / System.Math.Pow(10, (int)System.Math.Log10(fraq) + 1));
                         dataSet1.Tables[0].Columns[2].ReadOnly = false;
@@ -452,11 +452,13 @@ namespace measure
             int n = 0;
             if (rs > 1)
             {
+                chart1.Series[0].Points.Clear();
+                chart1.Series[1].Points.Clear();
                 float sx = 0;
                 float sy = 0;
                 float sx2 = 0;
                 float syx = 0;
-                for (int i = 0; i < rs - 1; i++)
+                for (int i = 0; i < rs; i++)
                 {
                     if (null == (dataSet2.Tables[0].Rows[i][2]))
                     {
@@ -465,6 +467,11 @@ namespace measure
                     n++;
                     float x = float.Parse(dataSet2.Tables[0].Rows[i][1].ToString());
                     float y = float.Parse(dataSet2.Tables[0].Rows[i][2].ToString());
+                    chart1.Series[0].Points.Add();
+                    chart1.Series[1].Points.Add();
+                    chart1.Series[0].Points[chart1.Series[0].Points.Count()-1].SetValueXY(x,y);
+                    chart1.Series[1].Points[chart1.Series[1].Points.Count()-1].XValue = x;
+
                     sx += x;
                     sx2 += x * x;
                     syx += y * x;
@@ -485,6 +492,10 @@ namespace measure
                     linearapprox.b = sy - linearapprox.a * sx;
                     formula.Text = "y = " + linearapprox.a.ToString("0.00") + "x " + (linearapprox.b < 0 ? "-" : "+") + " " + Math.Abs(linearapprox.b).ToString("0.00");
                     linearapprox.calibrated = true;
+                }
+                for (int i = 0; i < chart1.Series[1].Points.Count(); i++) 
+                {
+                    chart1.Series[1].Points[i].SetValueY(chart1.Series[1].Points[i].XValue * linearapprox.a + linearapprox.b);
                 }
             }
         }
