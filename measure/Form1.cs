@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExcelLibrary.SpreadSheet;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,6 +8,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -52,7 +54,6 @@ namespace measure
         {
             public float a;
             public float b;
-            public float disp;
             public bool calibrated;
         };
 
@@ -71,6 +72,7 @@ namespace measure
         }
 
         private static LinearCoef linearapprox = new LinearCoef();
+        private static LinearCoef expapprox = new LinearCoef();
 
         private static bool exchange_in_progress = false;
         private byte[] inPacket = new byte[30];
@@ -82,7 +84,10 @@ namespace measure
             InitializeComponent();
             linearapprox.a = 0;
             linearapprox.b = 0;
-            linearapprox.disp = 0;
+            linearapprox.calibrated = false;
+            expapprox.a = 0;
+            expapprox.b = 0;
+            expapprox.calibrated = false;
         }
         private string com_read()
         {
@@ -221,6 +226,12 @@ namespace measure
                         {
                             dataSet1.Tables[0].Columns[1].ReadOnly = false;
                             dataSet1.Tables[0].Rows[dataSet1.Tables[0].Rows.Count - 1][1] = linearapprox.a * val + linearapprox.b;
+                            dataSet1.Tables[0].Columns[1].ReadOnly = true;
+                        }
+                        if (expapprox.calibrated)
+                        {
+                            dataSet1.Tables[0].Columns[1].ReadOnly = false;
+                            dataSet1.Tables[0].Rows[dataSet1.Tables[0].Rows.Count - 1][1] = expapprox.a * Math.Exp(val * expapprox.b);
                             dataSet1.Tables[0].Columns[1].ReadOnly = true;
                         }
                     }
@@ -494,31 +505,100 @@ namespace measure
                     formula.Text = "y = " + linearapprox.a.ToString("0.00") + "x " + (linearapprox.b < 0 ? "-" : "+") + " " + Math.Abs(linearapprox.b).ToString("0.00");
                     linearapprox.calibrated = true;
                 }
+                else
+                {
+                    return;
+                }
                 for (int i = 0; i < chart1.Series[1].Points.Count(); i++) 
                 {
                     chart1.Series[0].Points[i].SetValueY(chart1.Series[1].Points[i].XValue * linearapprox.a + linearapprox.b);
                 }
                 chart1.Series[0].Sort(PointSortOrder.Ascending, "Y");
+                chart1.Series[0].LegendText = formula.Text;
+
             }
         }
 
+        private void exp_calc()
+        {
+            int rs = dataGridView2.Rows.Count;
+            int n = 0;
+            if (rs > 1)
+            {
+                chart1.Series[0].Points.Clear();
+                chart1.Series[1].Points.Clear();
+                float sx = 0;
+                float slny = 0;
+                float sx2 = 0;
+                float sxlny = 0;
+                for (int i = 0; i < rs - 1; i++)
+                {
+                    if (null == (dataSet2.Tables[0].Rows[i][2]))
+                    {
+                        continue;
+                    }
+                    n++;
+                    float x = float.Parse(dataSet2.Tables[0].Rows[i][1].ToString());
+                    float y = float.Parse(dataSet2.Tables[0].Rows[i][2].ToString());
+                    chart1.Series[0].Points.Add();
+                    chart1.Series[1].Points.Add();
+                    chart1.Series[0].Points[chart1.Series[0].Points.Count() - 1].SetValueXY(x, y);
+                    chart1.Series[1].Points[chart1.Series[1].Points.Count() - 1].SetValueXY(x, y);
+
+                    sx += x;
+                    sx2 += x * x;
+                    sxlny += (float)Math.Log(y) * x;
+                    slny += (float)Math.Log(y);
+                }
+                if (n < 2)
+                {
+                    expapprox.calibrated = false;
+                    return;
+                }
+                sx /= n;
+                sx2 /= n;
+                sxlny /= n;
+                slny /= n;
+                if ((sx2 - sx * sx) != 0)
+                {
+                    expapprox.b = (sxlny - sx * slny) / (sx2 - sx * sx);
+                    expapprox.a = (float)Math.Exp((sx2 * slny - sx * sxlny) / (sx2 - sx * sx));
+                    formula.Text = "y = " + expapprox.a.ToString("0.00") + " exp(" + expapprox.b.ToString("0.00") + "x)";
+                    expapprox.calibrated = true;
+                }
+                else
+                {
+                    return;
+                }
+                for (int i = 0; i < chart1.Series[1].Points.Count(); i++)
+                {
+                    chart1.Series[0].Points[i].SetValueY(expapprox.a * Math.Exp(chart1.Series[1].Points[i].XValue * expapprox.b));
+                }
+                chart1.Series[0].Sort(PointSortOrder.Ascending, "Y");
+                chart1.Series[0].LegendText = formula.Text;
+
+            }
+        }
         private void calc_linear_Click(object sender, EventArgs e)
         {
             linear_calc();
-            tabControl1.TabPages[3].Select();
+            expapprox.calibrated = false;
         }
 
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            if (tabControl1.SelectedTab == tabControl1.TabPages[0])
-            {
-                openToolStripMenuItem.Enabled = false;
-                closeToolStripMenuItem.Enabled = false;
-            }
-            else
+            if (tabControl1.SelectedTab == tabControl1.TabPages[1] ||
+                tabControl1.SelectedTab == tabControl1.TabPages[2])
             {
                 openToolStripMenuItem.Enabled = true;
                 closeToolStripMenuItem.Enabled = true;
+                exportToEXCELToolStripMenuItem .Enabled = true;
+            }
+            else
+            {
+                openToolStripMenuItem.Enabled = false;
+                closeToolStripMenuItem.Enabled = false;
+                exportToEXCELToolStripMenuItem .Enabled = false;
             }
 
         }
@@ -536,6 +616,17 @@ namespace measure
                 }
                 dataSet1.Tables[0].Columns[1].ReadOnly = true;
             }
+            if (expapprox.calibrated)
+            {
+                dataSet1.Tables[0].Columns[1].ReadOnly = false;
+                for (int i = 0; i < dataSet1.Tables[0].Rows.Count; i++)
+                {
+                    double val = float.Parse(dataSet1.Tables[0].Rows[i][2].ToString());
+                    dataSet1.Tables[0].Rows[i][1] = expapprox.a * Math.Exp( val * expapprox.b);
+
+                }
+                dataSet1.Tables[0].Columns[1].ReadOnly = true;
+            }
         }
 
         private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -545,6 +636,54 @@ namespace measure
 
         private void dataGridView2_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
+        }
+
+        private void exportToEXCELToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog2.ShowDialog(this);
+        }
+
+        private void saveFileDialog2_FileOk(object sender, CancelEventArgs e)
+        {
+            string Path = saveFileDialog2.FileName;
+            string csvData = "";
+            if (tabControl1.SelectedTab == tabControl1.TabPages[1])
+            {
+                for (int i = 0; i < dataSet1.Tables[0].Columns.Count; i++)
+                {
+                    csvData += (dataSet1.Tables[0].Columns[i].ColumnName) + ";";
+                }
+                for (int i = 0; i < dataSet1.Tables[0].Rows.Count; i++)
+                {
+                    csvData += System.Environment.NewLine;
+                    for (int j = 0; j < dataSet1.Tables[0].Columns.Count; j++)
+                    {
+                        csvData += dataSet1.Tables[0].Rows[i][j] + ";";
+                    }
+                }
+            }
+            else if (tabControl1.SelectedTab == tabControl1.TabPages[2])
+            {
+                for (int i = 0; i < dataSet2.Tables[0].Columns.Count; i++)
+                {
+                    csvData += (dataSet2.Tables[0].Columns[i].ColumnName) + ";";
+                }
+                for (int i = 0; i < dataSet2.Tables[0].Rows.Count; i++)
+                {
+                    csvData += System.Environment.NewLine;
+                    for (int j = 0; j < dataSet2.Tables[0].Columns.Count; j++)                
+                    {
+                        csvData += dataSet2.Tables[0].Rows[i][j] + ";";
+                    }
+                }
+            }
+            File.WriteAllText(Path, csvData);
+        }
+
+        private void exp_approx_Click(object sender, EventArgs e)
+        {
+            exp_calc();
+            linearapprox.calibrated = false;
         }
     }
 }
