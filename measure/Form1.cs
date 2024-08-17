@@ -10,6 +10,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace measure
 {
@@ -458,7 +459,7 @@ namespace measure
                 float sy = 0;
                 float sx2 = 0;
                 float syx = 0;
-                for (int i = 0; i < rs; i++)
+                for (int i = 0; i < rs-1; i++)
                 {
                     if (null == (dataSet2.Tables[0].Rows[i][2]))
                     {
@@ -469,8 +470,8 @@ namespace measure
                     float y = float.Parse(dataSet2.Tables[0].Rows[i][2].ToString());
                     chart1.Series[0].Points.Add();
                     chart1.Series[1].Points.Add();
-                    chart1.Series[0].Points[chart1.Series[0].Points.Count()-1].SetValueXY(x,y);
-                    chart1.Series[1].Points[chart1.Series[1].Points.Count()-1].XValue = x;
+                    chart1.Series[0].Points[chart1.Series[0].Points.Count()-1].SetValueXY(x, y);
+                    chart1.Series[1].Points[chart1.Series[1].Points.Count()-1].SetValueXY(x, y);
 
                     sx += x;
                     sx2 += x * x;
@@ -495,14 +496,16 @@ namespace measure
                 }
                 for (int i = 0; i < chart1.Series[1].Points.Count(); i++) 
                 {
-                    chart1.Series[1].Points[i].SetValueY(chart1.Series[1].Points[i].XValue * linearapprox.a + linearapprox.b);
+                    chart1.Series[0].Points[i].SetValueY(chart1.Series[1].Points[i].XValue * linearapprox.a + linearapprox.b);
                 }
+                chart1.Series[0].Sort(PointSortOrder.Ascending, "Y");
             }
         }
 
         private void calc_linear_Click(object sender, EventArgs e)
         {
             linear_calc();
+            tabControl1.TabPages[3].Select();
         }
 
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
@@ -533,6 +536,15 @@ namespace measure
                 }
                 dataSet1.Tables[0].Columns[1].ReadOnly = true;
             }
+        }
+
+        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView2_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
         }
     }
 }
